@@ -1,0 +1,19 @@
+Should open the CREATE tab when create=true passed.
+Should close and return empty if cancel pressed on CREATE tab.
+Should default the location field on the CREATE tab to the passed initial directory.
+Should default the location field on the CREATE tab to the passed initial directory, when re-opening after being change.
+Should open location directory selector within passed initial directory on the CREATE tab.
+
+Should open the OPEN tab when create=false passed.
+Should close and return empty if cancel pressed on OPEN tab.
+Should open directory selector within passed initial directory on the OPEN tab.
+Should open directory selector within passed initial directory on the OPEN tab, when re-opening after changing dir.
+
+Should display message when user tries to OPEN a non-existing directory.
+Should display message when user tries to OPEN a directory with invalid characters in it.
+
+...
+
+
+Should fail if create directory exists
+Should fail if open directory doesn't exist.

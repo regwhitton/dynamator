@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="createOpenTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="230.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jfx.ui.impl.openproject.OpenProjectController">
+  <tabs>
+    <Tab text="New Project">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <center>
+                        <VBox fillWidth="false" spacing="10.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Label contentDisplay="RIGHT" mnemonicParsing="true" text="Project _Name">
+                                 <graphic>
+                                    <TextField fx:id="projectName" onKeyTyped="#projectNameKeyFilter" prefColumnCount="20" />
+                                 </graphic>
+                              </Label>
+                              <CheckBox fx:id="useDefaultLocation" onAction="#toggleUseDefaultLocationAction" text="_Default Location" />
+                              <Label fx:id="locationControls" contentDisplay="RIGHT" mnemonicParsing="true" text="_Location">
+                                 <graphic>
+                                    <HBox fillHeight="false" spacing="10.0">
+                                       <children>
+                                          <TextField fx:id="projectLocation" prefColumnCount="28" />
+                                          <Button mnemonicParsing="false" onAction="#browseForProjectLocationAction" text="Browse ..." />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                 </graphic>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </center>
+                     <bottom>
+                        <HBox alignment="CENTER_RIGHT" fillHeight="false" spacing="10.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Button defaultButton="true" mnemonicParsing="false" onAction="#createButtonAction" text="Create" />
+                              <Button cancelButton="true" mnemonicParsing="false" onAction="#cancelButtonAction" text="Cancel" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                     </bottom>
+                  </BorderPane>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding></AnchorPane>
+      </content>
+    </Tab>
+    <Tab text="Open Project">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <center>
+                        <VBox spacing="10.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Label contentDisplay="RIGHT" text="Project Folder">
+                                 <graphic>
+                                    <HBox fillHeight="false" spacing="10.0">
+                                       <children>
+                                          <TextField fx:id="openProjectFolder" prefColumnCount="25" />
+                                          <Button mnemonicParsing="false" onAction="#browseForExistingProjectAction" text="Browse ..." />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                 </graphic>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </center>
+                     <bottom>
+                        <HBox alignment="CENTER_RIGHT" fillHeight="false" spacing="10.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Button defaultButton="true" mnemonicParsing="false" onAction="#openButtonAction" text="Open" />
+                              <Button cancelButton="true" mnemonicParsing="false" onAction="#cancelButtonAction" text="Cancel" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </HBox>
+                     </bottom>
+                  </BorderPane>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

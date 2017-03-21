@@ -1,0 +1,208 @@
+import org.gradle.internal.os.OperatingSystem;
+
+buildscript {
+    dependencies {
+        classpath (
+			group: 'de.dynamicfiles.projects.gradle.plugins',
+			name: 'javafx-gradle-plugin', version: '8.8.2'
+		)
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+allprojects {
+    group = 'dynamator'
+    version = '1.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+    	testCompile 'junit:junit:4.+'
+        testCompile 'org.assertj:assertj-core:3.+'
+        testCompile "org.mockito:mockito-core:2.+"
+    }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+project(':definitions') {
+}
+
+project(':utils') {
+    dependencies {
+        compile project(':definitions')
+	}
+}
+
+project(':opencv-component-support') {
+    dependencies {
+        compile project(':definitions')
+        compile project(':utils')
+
+        compile (
+            group: 'org.bytedeco.javacpp-presets',
+            name: 'opencv',
+            version: '3.1.0-1.2'
+        )
+
+        runtime (
+            group: 'org.bytedeco.javacpp-presets',
+            name: 'opencv',
+            version: '3.1.0-1.2',
+            classifier: getPlatformClassifier()
+        )
+	}
+
+    /*
+     * Gradle has a bug that stops it resolving dependencies.
+     * Workaround: https://github.com/bytedeco/javacv/issues/432
+     */
+    configurations {
+        all*.exclude group: 'org.bytedeco', module: 'javacpp-presets'
+    }
+
+    assemble.doLast {
+        extractJavacppNatives(
+            project, 'opencv', getPlatformClassifier(), 'core', 'videoio'
+        )
+    }
+
+    tasks.withType(Test) {
+        systemProperty 'java.library.path', "${rootProject.buildDir}/natives"
+    }
+}
+
+project(':components') {
+    dependencies {
+        compile project(':definitions')
+        compile project(':utils')
+        compile project(':opencv-component-support')
+	}
+}
+
+project(':container-support') {
+    dependencies {
+        compile project(':definitions')
+        compile project(':utils')
+	}
+}
+
+project(':jfx-container') {
+
+    /*
+     * JavaFX plugin: https://github.com/FibreFoX/javafx-gradle-plugin
+     *
+     * Introduces commands:
+     *   gradle jfxJar     - creates executable jar
+     *   gradle jfxNative  - creates native bundle
+     *   gradle jfxRun     - executes jar
+     *
+     * Third party software may be required.
+     * On Windows this is:
+     *   for EXE - Inno Setup 5 or later, http://www.jrsoftware.org/isdl.php
+     *   for MSI - WiX 3.0 or later, http://wix.sourceforge.net/
+     *
+     * See: https://blogs.oracle.com/talkingjavadeployment/entry/native_packaging_for_javafx
+     */
+    apply plugin: 'javafx-gradle-plugin'
+
+    dependencies {
+        compile project(':definitions')
+        compile project(':utils')
+        compile project(':components')
+        compile project(':container-support')
+	}
+
+    /*
+     * Scenebuilder does not find the controller class unless it is in the
+     * same directory as the .fxml file. So it is kept with the java source
+     * and we need to include it in the resources for the jar.
+     */
+    sourceSets {
+        main {
+            resources {
+                srcDirs = ['src/main/java']
+                includes = ['**/*.fxml']
+            }
+        }
+    }
+
+    jfx {
+        mainClass = 'jfx.main.Main'
+        vendor = 'Reg Whitton'
+    }
+}
+
+/**
+ * Calculate the classifier for the javacpp artifact that contains the native
+ * libraries for the current platform.
+ */
+def getPlatformClassifier() {
+    def os = OperatingSystem.current();
+    def osname =
+		os.isWindows() ? "windows" :
+		os.isLinux() ? "linux" :
+		os.isMacOsX() ? "macosx" :
+		"unknown";
+
+    def arch = System.properties['os.arch']
+    def archname = arch ==~ /x86_64|amd64/ ? "x86_64" : "unknown";
+
+    return "${osname}-${archname}";
+}
+
+/**
+ * Extracts the named shared libraries in the javacpp platform artifact into the
+ * build/natives directory.
+ * Used to cut down the size of the final deliverable.
+ *
+ * So if the artifact "opencv" and the library "core" is given, the 
+ *    jniopencv_core*
+ *    opencv_core* 
+ * libraries are extracted, plus any support libraries (guessed at from
+ * to the naming conventions).
+ */
+def extractJavacppNatives(clientProject, artifactId,
+		platformClassifier, String... libnames) {
+
+    def nativesJarSuffix = "-${platformClassifier}.jar";
+    clientProject.configurations.runtime.filter { File file ->
+        def name = file.getName();
+        name.startsWith(artifactId) && name.endsWith(nativesJarSuffix)
+    }.each { File file ->
+		libnames.toList().each { fname ->
+        	ant.unjar(src: file, dest: "${buildDir}/natives",
+            	overwrite:"true") {
+            	patternset( ) {
+                	//include( name: "org/bytedeco/javacpp/**")
+                	include( name: "org/bytedeco/javacpp/${platformClassifier}/${artifactId}_${fname}*")
+                	include( name: "org/bytedeco/javacpp/${platformClassifier}/jni${artifactId}_${fname}*")
+            	}
+            	mapper(type:"flatten")
+        	}
+		};
+        ant.unjar(src: file, dest: "${buildDir}/natives",
+            overwrite:"true") {
+            patternset( ) {
+                include( name: "org/bytedeco/javacpp/${platformClassifier}/*")
+                exclude( name: "org/bytedeco/javacpp/${platformClassifier}/jni${artifactId}_*")
+                exclude( name: "org/bytedeco/javacpp/${platformClassifier}/${artifactId}_*")
+            }
+            mapper(type:"flatten")
+        }
+    }
+}
