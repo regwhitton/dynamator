@@ -1,0 +1,20 @@
+@startuml
+
+interface App
+interface CameraAccess
+interface ImageTransformer
+interface ProjectStoreManager
+interface VideoEncoder
+
+package JavaFX-container {
+    UiImpl -> App
+}
+
+App <|-- AppImpl
+CameraAccess <- AppImpl
+AppImpl --> ImageTransformer
+AppImpl -> ProjectStoreManager
+AppImpl --> VideoEncoder
+
+
+@enduml

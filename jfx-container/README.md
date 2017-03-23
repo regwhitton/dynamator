@@ -1,0 +1,1 @@
+This sub-project provides a JavaFX UI to contain the logical application. 
