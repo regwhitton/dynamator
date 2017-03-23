@@ -29,4 +29,4 @@ Ideas such as:
 * Gradle instead of Maven.
 
 # Design
-![Design UML](design/design.svg "Design") 
+![Design UML](./design/design.png) 
