@@ -14,16 +14,20 @@ public class DefinitionsTest {
 	private final static int JAVA_FILE_SUFFIX_LEN = JAVA_FILE_SUFFIX.length();
 
 	@Test
-	public void definitionsShouldContainInterfacesAndEnumsOnly() throws Exception {
+	public void definitionsShouldContainInterfacesEnumsOrCheckedExceptionsOnly() throws Exception {
 		for (Class<?> cls : new ClassList("src/main/java").list()) {
-			if(!cls.isInterface() && !cls.isEnum()){
+			if (!(cls.isInterface() || cls.isEnum() || isCheckedException(cls))) {
 				fail(cls.getName() + " must be an interface or enum");
 			}
 		}
 	}
 
+	private boolean isCheckedException(Class<?> cls) {
+		return Exception.class.isAssignableFrom(cls) && !RuntimeException.class.isAssignableFrom(cls);
+	}
+
 	private static class ClassList {
-		
+
 		private final List<Class<?>> list = new ArrayList<Class<?>>();
 
 		ClassList(String dir) throws ClassNotFoundException {

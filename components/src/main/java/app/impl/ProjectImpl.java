@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import app.FrameSizeMismatchException;
 import app.Project;
 import app.camera.CameraAccess;
 import app.imagetransformer.ImageTransformer;
@@ -40,21 +41,32 @@ class ProjectImpl implements Project {
 	}
 
 	@Override
-	public void captureImage() {
-		cameraAccess.getImage().ifPresent(frame -> {
-			projectStore.append(frame);
-			updateCurFrameOutline(frame);
-		});
-	
-		/*-
-		 TODO - If wrong size, then prompt user to say so, then ignore.
-		Display expected size somewhere.
-		*/
-		// TODO -Check image is expected size. which would be fixed when project
-		// created, or once images recorded.
-		// Or we could scale to size (allows use of another computer). Perhaps
-		// alert if changed - could just
-		// not show outline to avoid processing problems.
+	public void captureImage() throws FrameSizeMismatchException {
+		Optional<Image> frame = cameraAccess.getImage();
+		if(frame.isPresent()){
+			addFrameToProject(frame.get());
+		}
+	}
+
+	private void addFrameToProject(Image frame) throws FrameSizeMismatchException {
+		if (projectHasNoFrameSizeYet()) {
+			projectStore.setFrameSize(frame.getSize());
+		} else {
+			ensureFrameSizeMatchesProject(frame);
+		}
+		projectStore.append(frame);
+		updateCurFrameOutline(frame);
+		curFrameOutline = Optional.of(imageTransformer.toOutline(frame));
+	}
+
+	private boolean projectHasNoFrameSizeYet() {
+		return !projectStore.getFrameSize().isPresent();
+	}
+
+	private void ensureFrameSizeMatchesProject(Image frame) throws FrameSizeMismatchException {
+		if (!frameSizeMatchesProject(frame)) {
+			throw new FrameSizeMismatchException(projectStore.getFrameSize().get());
+		}
 	}
 
 	private void updateCurFrameOutline(Image frame) {
@@ -63,11 +75,24 @@ class ProjectImpl implements Project {
 
 	@Override
 	public Optional<Image> previewImage() {
-		return cameraAccess.getImage().map(frame -> combineWithCurFrameOutline(frame));
+		return cameraAccess.getImage().map(cameraImage -> buildPreviewImage(cameraImage));
+	}
+
+	private Image buildPreviewImage(Image cameraImage) {
+		return curFrameOutline.map(outline -> frameSizesMatch(cameraImage, outline)
+				? combineWithCurFrameOutline(cameraImage) : cameraImage).orElse(cameraImage);
+	}
+
+	private boolean frameSizesMatch(Image frame1, Image frame2) {
+		return frame1.getSize().equals(frame2.getSize());
+	}
+
+	private boolean frameSizeMatchesProject(Image frame) {
+		return frame.getSize().equals(projectStore.getFrameSize().get());
 	}
 
 	private Image combineWithCurFrameOutline(Image frame) {
-		return curFrameOutline.map(outline -> imageTransformer.overlay(frame, outline)).orElse(frame);
+		return imageTransformer.overlay(frame, curFrameOutline.get());
 	}
 
 	@Override

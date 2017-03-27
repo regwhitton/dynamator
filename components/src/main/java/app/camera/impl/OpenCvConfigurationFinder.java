@@ -1,5 +1,8 @@
 package app.camera.impl;
 
+import static util.Verify.argNotNull;
+import static util.Verify.argNotNullOrBlank;
+
 import java.util.Optional;
 
 import app.CameraConfiguration;
@@ -51,7 +54,7 @@ class OpenCvConfigurationFinder {
 		for (int cameraIndex = 0; openCvCamera.canOpen(cameraIndex); cameraIndex++) {
 			Seq<Resolution> resolutions = findAvailableResolutions(openCvCamera);
 			long cameraFingerprint = calculateCameraFingerprint(resolutions);
-			for (Resolution res : findAvailableResolutions(openCvCamera)) {
+			for (Resolution res : resolutions) {
 				configs.add(toCameraConfig(cameraIndex, cameraFingerprint, res));
 			}
 		}
@@ -104,8 +107,8 @@ class OpenCvConfigurationFinder {
 		final String description;
 
 		Resolution(Size size, String description) {
-			this.size = size;
-			this.description = description;
+			this.size = argNotNull(size);
+			this.description = argNotNullOrBlank(description);
 		}
 
 		@Override

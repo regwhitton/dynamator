@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 
 import app.App;
 import app.CameraConfiguration;
+import app.FrameSizeMismatchException;
 import app.Project;
 import jfx.ui.openproject.OpenProjectDialog;
 import jfx.util.JfxImageConverter;
@@ -101,19 +102,26 @@ public class UiController {
 
 	@FXML
 	public void grabFrameButtonAction() {
-		project.captureImage();
+		try {
+			project.captureImage();
+		} catch (FrameSizeMismatchException ex) {
+			Popup.userError("Frame size for project previously set to " + ex.getExpectedFrameSize());
+		}
 	}
 
 	@FXML
 	public void onCameraChoiceShowAction() {
-		ObservableList<CameraConfiguration> cameras = cameraChoice.getItems();
-		cameras.clear();
-		app.getCameraConfigurations().forEach(cc -> cameras.add(cc));
+		ObservableList<CameraConfiguration> cameraConfigs = cameraChoice.getItems();
+		cameraConfigs.clear();
+		app.getCameraConfigurations().forEach(cc -> cameraConfigs.add(cc));
 	}
 
 	@FXML
 	public void onCameraSelectAction() {
-		app.setCameraConfiguration(cameraChoice.getValue());
+		CameraConfiguration cameraConfig = cameraChoice.getValue();
+		if (cameraConfig != null) {
+			app.setCameraConfiguration(cameraChoice.getValue());
+		}
 	}
 
 	@FXML

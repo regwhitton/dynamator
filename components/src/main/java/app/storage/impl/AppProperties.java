@@ -30,6 +30,6 @@ class AppProperties {
 	}
 
 	Optional<String> getLastProjectPath() {
-		return props.getOpt(LAST_PROJECT_PROPERTY);
+		return props.getOptional(LAST_PROJECT_PROPERTY);
 	}
 }

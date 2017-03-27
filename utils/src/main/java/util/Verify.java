@@ -132,6 +132,25 @@ public class Verify {
 	}
 
 	/**
+	 * Verify that a string reference is not null or blank (only whitespace).
+	 * 
+	 * @return the passed reference, unless it is null or blank
+	 * @throws NullPointerException
+	 *             if value is null.
+	 * @throws IllegalStateException
+	 *             if value is empty or only contains whitespace
+	 */
+	public static <T extends CharSequence> T notNullOrBlank(T value) {
+		if (value == null) {
+			throw new NullPointerException("unexpected null value");
+		}
+		if (value.length() == 0 || value.chars().allMatch(Character::isWhitespace)) {
+			throw new IllegalStateException("unexpected blank value");
+		}
+		return value;
+	}
+
+	/**
 	 * Verify that a varargs array contains no null values.
 	 * 
 	 * @return the passed reference, unless it contains any null values.

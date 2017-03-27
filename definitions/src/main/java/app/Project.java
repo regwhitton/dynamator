@@ -11,11 +11,11 @@ public interface Project {
 	 * @return the directory where the project is stored.
 	 */
 	Path getProjectDirectory();
-	
+
 	/**
-	 * Capture a new frame image and add it to the current project.
+	 * If an image is available, capture it and add it to the project.
 	 */
-	void captureImage();
+	void captureImage() throws FrameSizeMismatchException;
 
 	/**
 	 * Get a preview image to display to the user (if camera available).

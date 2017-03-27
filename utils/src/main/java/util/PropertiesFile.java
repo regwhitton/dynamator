@@ -1,6 +1,7 @@
 package util;
 
 import static util.Verify.argNotNull;
+import static util.Verify.notNullOrBlank;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -92,8 +93,17 @@ public class PropertiesFile {
 		saveOnInitialise();
 	}
 
+	/**
+	 * @throws NullPointerException
+	 *             if a property is requested that doesn't exist. If the
+	 *             property only optionally exists then use
+	 *             {@link #getOpt(String)}.
+	 * @throws IllegalStateException
+	 *             if the property is blank. If the property only optionally
+	 *             holds a value then use {@link #getOpt(String)}.
+	 */
 	public String get(String key) {
-		return properties.getProperty(argNotNull(key));
+		return notNullOrBlank(properties.getProperty(argNotNull(key)));
 	}
 
 	/**
@@ -101,6 +111,14 @@ public class PropertiesFile {
 	 */
 	public void set(String key, String value) {
 		properties.setProperty(argNotNull(key), argNotNull(value));
+		saveOnPropertyUpdate();
+	}
+
+	/**
+	 * Unsets property and saves file.
+	 */
+	public void unset(String key) {
+		properties.remove(argNotNull(key));
 		saveOnPropertyUpdate();
 	}
 
@@ -121,12 +139,12 @@ public class PropertiesFile {
 	}
 
 	/**
-	 * Gets the optional value of the property, returning empty if it is not or
-	 * blank.
+	 * Gets the optional value of the property, returning empty if it is not set
+	 * or blank.
 	 */
-	public Optional<String> getOpt(String key) {
+	public Optional<String> getOptional(String key) {
 		String prop = properties.getProperty(argNotNull(key));
-		return prop == null || prop.isEmpty() ? Optional.empty() : Optional.of(prop);
+		return prop == null || prop.chars().allMatch(Character::isWhitespace) ? Optional.empty() : Optional.of(prop);
 	}
 
 	@SuppressWarnings("serial")

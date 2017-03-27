@@ -6,23 +6,21 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import type.Image;
+import type.Size;
 
 public interface ProjectStore {
 
 	/**
-	 * Create new {@link ProjectStore}.
+	 * Create the project directory and property file this {@link ProjectStore}
+	 * will represent on disc.
 	 */
 	void create() throws IOException;
 
 	/**
-	 * Open and read details from the existing {@link ProjectStore}.
+	 * Open the existing project directory and property file this
+	 * {@link ProjectStore} represents on disc, and read in the details.
 	 */
 	void open() throws IOException;
-
-	/**
-	 * @return the number of frames in the store
-	 */
-	int size();
 
 	/**
 	 * Append a frame to the store.
@@ -43,14 +41,24 @@ public interface ProjectStore {
 	 * @return the last frame in the project (if one).
 	 */
 	Optional<Image> lastImage();
-	
+
 	/**
 	 * Change the number of frames per second.
 	 */
-	void setFps(int fps);
+	void setFramesPerSecond(int fps);
 
 	/**
 	 * Get the current number of frames per second.
 	 */
-	int getFps();
+	int getFramesPerSecond();
+
+	/**
+	 * Set the size of frame for this project.
+	 */
+	void setFrameSize(Size size);
+
+	/**
+	 * Get the size of frames in this project, if it has been set.
+	 */
+	Optional<Size> getFrameSize();
 }

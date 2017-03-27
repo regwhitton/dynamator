@@ -9,24 +9,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jfx.ui.impl.UiController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="296.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jfx.ui.impl.UiController">
    <center>
-      <ScrollPane fx:id="imageViewerScrollPane" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="imageViewerScrollPane" prefHeight="302.0" prefWidth="465.0" BorderPane.alignment="CENTER">
          <content>
             <ImageView fx:id="imageViewer" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
          </content>
       </ScrollPane>
    </center>
    <left>
-      <ToolBar orientation="VERTICAL" BorderPane.alignment="CENTER">
+      <ToolBar orientation="VERTICAL" prefHeight="296.0" prefWidth="230.0" BorderPane.alignment="CENTER">
         <items>
             <Button fx:id="grabFrameButton" defaultButton="true" onAction="#grabFrameButtonAction" text="Capture" />
             <Separator prefHeight="30.0" />
             <CheckBox fx:id="fitImageToPaneCheckBox" onAction="#fitImageCheckboxAction" selected="true" text="_Fit" />
             <Separator prefHeight="30.0" />
-            <Button mnemonicParsing="false" onAction="#changeProjectAction" text="Project ..." textAlignment="CENTER" />
-            <ComboBox fx:id="cameraChoice" onAction="#onCameraSelectAction" onShowing="#onCameraChoiceShowAction" prefWidth="150.0" promptText="Camera" />
-            <Button mnemonicParsing="false" onAction="#createVideo" text="Export Video ..." />
+            <Button mnemonicParsing="false" onAction="#changeProjectAction" prefHeight="31.0" prefWidth="213.0" text="Project ..." textAlignment="CENTER" />
+            <ComboBox fx:id="cameraChoice" onAction="#onCameraSelectAction" onShowing="#onCameraChoiceShowAction" prefHeight="31.0" prefWidth="214.0" promptText="Camera" />
+            <Button mnemonicParsing="false" onAction="#createVideo" prefHeight="31.0" prefWidth="213.0" text="Export Video ..." />
         </items>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

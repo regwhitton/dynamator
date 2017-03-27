@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import app.storage.ProjectStore;
 import type.Image;
+import type.Size;
 
 class ProjectStoreImpl implements ProjectStore {
 
@@ -39,14 +40,10 @@ class ProjectStoreImpl implements ProjectStore {
 
 	@Override
 	public void open() throws IOException {
-		// TODO - fail if another process has this open - perhaps using file lock.
+		// TODO - fail if another process has this open - perhaps using file
+		// lock.
 		projectProperties.initialise();
 		this.currentFrame = frameStore.countFrameFiles();
-	}
-
-	@Override
-	public int size() {
-		return currentFrame;
 	}
 
 	@Override
@@ -71,13 +68,24 @@ class ProjectStoreImpl implements ProjectStore {
 	}
 
 	@Override
-	public void setFps(int fps) {
-		argInRange("frames per second", fps, 1, 100);
-		projectProperties.setFps(fps);
+	public void setFramesPerSecond(int framesPerSecond) {
+		argInRange("frames per second", framesPerSecond, 1, 100);
+		projectProperties.setFramesPerSecond(framesPerSecond);
 	}
 
 	@Override
-	public int getFps() {
-		return projectProperties.getFps();
+	public int getFramesPerSecond() {
+		return projectProperties.getFramesPerSecond();
+	}
+
+	@Override
+	public void setFrameSize(Size size) {
+		argNotNull("frame size", size);
+		projectProperties.setFrameSize(size);
+	}
+
+	@Override
+	public Optional<Size> getFrameSize() {
+		return projectProperties.getFrameSize();
 	}
 }
